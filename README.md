@@ -26,8 +26,9 @@ $css = $parser->minified($minified)->render($nodes);
 ```
 Or just for a simple demonstration
 ```php
+$minified = false;
 $parser = new Tokenize("path/to/css.css");
-$css = $parser->parse()->minified()->render();
+$css = $parser->parse()->minified($minified)->render();
 echo "<textarea style='width: 100%; height: 100%;'>$css</textarea>";
 ```
 
