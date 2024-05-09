@@ -1,0 +1,18 @@
+{
+    "name": "webzille/cssparser",
+    "description": "Parse CSS file into an abstract syntax tree data structure",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Webzille\\CssParser\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "webzille"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
