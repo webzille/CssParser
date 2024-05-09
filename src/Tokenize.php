@@ -87,7 +87,7 @@ class Tokenize
         }
     }
 
-    private function parseDocument($char, $line, $length)
+    private function parseDocument(string $char, string $line, int $length): void
     {
         $this->parseBlock($char, $line);
 
@@ -96,7 +96,7 @@ class Tokenize
         $this->parseLiterals($char);
     }
 
-    private function parseLiterals($char)
+    private function parseLiterals(string $char): void
     {
         if ($char === '"' || $char === "'" && !$this->inComment) {
             $this->isInString = !$this->isInString;
@@ -111,7 +111,7 @@ class Tokenize
         }
     }
 
-    private function parseBlock($char, $line)
+    private function parseBlock(string $char, string $line): void
     {
         if ($char === '@' && !$this->inComment) {
             $this->parseAtRule($line);
@@ -130,7 +130,7 @@ class Tokenize
         }
     }
 
-    private function parseAtRule($line)
+    private function parseAtRule(string $line): void
     {
         $atRuleEnd = strcspn($line, '{};', $this->col);
         $fullAtRule = trim(substr($line, $this->col, $atRuleEnd));
@@ -156,7 +156,7 @@ class Tokenize
         $this->inSelector = $this->isComplex;
     }
 
-    private function parseSelector($line)
+    private function parseSelector(string $line): void
     {
         $this->buffer = rtrim($this->buffer, ',');
         $selectorValue = trim(str_replace(['}', '{'], '', $this->buffer));
@@ -170,7 +170,7 @@ class Tokenize
         }
     }
 
-    private function parsePropertyBlock($char)
+    private function parsePropertyBlock(string $char): void
     {
         if ($char === ':' && $this->inSelector && strpos(trim($this->buffer), ':') && strpos($this->buffer, '.') === false && strpos($this->buffer, '#') === false) {
             $this->parseProperty();
@@ -181,7 +181,7 @@ class Tokenize
         }
     }
 
-    private function parseProperty()
+    private function parseProperty(): void
     {
         $property = trim(str_replace(':', '', $this->buffer));
         $this->currentProperty = new Property($property);
@@ -190,7 +190,7 @@ class Tokenize
         $this->inProperty = true;
     }
 
-    private function parsePropertyValue($char)
+    private function parsePropertyValue(string $char): void
     {
         $this->buffer = rtrim($this->buffer, ',;');
 
@@ -203,7 +203,7 @@ class Tokenize
         }
     }
 
-    private function parseComment($char, $line, $length)
+    private function parseComment(string $char, string $line, int $length): void
     {
         if ($char === '/' && $this->col + 1 < $length && $line[$this->col + 1] === '*') {
             $this->parseCommentStart($line);
@@ -218,7 +218,7 @@ class Tokenize
         }
     }
 
-    private function parseCommentStart($line)
+    private function parseCommentStart(string $line): void
     {
         $this->inComment = true;
         $commentEnd = strpos($line, '*/', $this->col + 2);
@@ -232,14 +232,14 @@ class Tokenize
         }
     }
 
-    private function parseCommentLine()
+    private function parseCommentLine(): void
     {
         $comment = new Comment(trim($this->buffer));
         $this->currentNode->addChild($comment);
         $this->buffer = '';
     }
 
-    private function parseCommentEnd()
+    private function parseCommentEnd(): void
     {
         $this->inComment = false;
         $comment = new Comment(trim($this->buffer) . '/');
@@ -247,7 +247,7 @@ class Tokenize
         $this->buffer = '';
     }
 
-    private function parseBlockEnd()
+    private function parseBlockEnd(): void
     {
         if (!empty($this->currentNode->parent))
         {
@@ -262,8 +262,9 @@ class Tokenize
         return $this->root;
     }
 
-    public function render(CSSNode $node, int $indentation = 0, string $css = ''): string
+    public function render(CSSNode $node = null, int $indentation = 0, string $css = ''): string
     {
+        $node = $node === null ? $this->root : $node;
         $indent = $this->minified ? '' : str_repeat($this->indent, $indentation);
         $newLine = $this->minified ? '' : $this->newLine;
         foreach ($node->children as $child) {
