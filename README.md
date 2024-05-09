@@ -24,7 +24,7 @@ $css = $parser->render($nodes);
 By default, the class renders pretty CSS, if you prefer minified CSS (or need a toggle to make it dynamic based on user input) you may chain the `minified(true)` method before the `render()` method.
 
 ```php
-// Default for minified is false, setting it to true rendered minified CSS
+// Default for minified is false, setting it to true renders minified CSS
 $minified = true;
 $css = $parser->minified($minified)->render($nodes);
 ```
