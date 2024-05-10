@@ -2,23 +2,15 @@
 
 namespace Webzille\CssParser\Nodes;
 
-class PropertyValue extends CSSNode {
-    private $value;
+class PropertyValue extends CSSNode
+{
 
-    public function __construct($value) {
-        parent::__construct('property-value');
-        $this->value = $value;
-    }
+    public string $value;
 
-    public function getValue()
+    public function __construct(string $value, int $lineNo)
     {
-        return $this->value;
-    }
-
-    public function setValue($value)
-    {
+        parent::__construct('property-value', $lineNo);
+        
         $this->value = $value;
-
-        return $this;
     }
 }

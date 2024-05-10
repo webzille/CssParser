@@ -2,16 +2,15 @@
 
 namespace Webzille\CssParser\Nodes;
 
-class Selector extends CSSNode {
-    public $selector;
+class Selector extends CSSNode
+{
 
-    public function __construct($selector) {
-        parent::__construct('selector');
-        $this->selector = $selector;
-    }
+    public readonly string $selector;
 
-    public function hasChildren()
+    public function __construct(string $selector, int $lineNo)
     {
-        return count($this->children) > 0;
+        parent::__construct('selector', $lineNo);
+
+        $this->selector = $selector;
     }
 }

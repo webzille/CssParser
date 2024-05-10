@@ -2,16 +2,15 @@
 
 namespace Webzille\CssParser\Nodes;
 
-class Property extends CSSNode {
-    public $property;
+class Property extends CSSNode
+{
 
-    public function __construct($property) {
-        parent::__construct('property');
-        $this->property = $property;
-    }
+    public readonly string $property;
 
-    public function countChildren()
+    public function __construct(string $property, int $lineNo)
     {
-        return count($this->children);
+        parent::__construct('property', $lineNo);
+        
+        $this->property = $property;
     }
 }

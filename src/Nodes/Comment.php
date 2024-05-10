@@ -2,11 +2,15 @@
 
 namespace Webzille\CssParser\Nodes;
 
-class Comment extends CSSNode {
-    public $comment;
+class Comment extends CSSNode
+{
 
-    public function __construct($comment) {
-        parent::__construct('comment');
+    public readonly string $comment;
+
+    public function __construct(string $comment, int $lineNo)
+    {
+        parent::__construct('comment', $lineNo);
+
         $this->comment = $comment;
     }
 }

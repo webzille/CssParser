@@ -2,13 +2,17 @@
 
 namespace Webzille\CssParser\Nodes;
 
-class AtRule extends CSSNode {
-    public $rule;
-    public $params;
-    public $isComplex;
+class AtRule extends CSSNode
+{
 
-    public function __construct($rule, $params = '', $isComplex = false) {
-        parent::__construct('at-rule');
+    public readonly string $rule;
+    public readonly string $params;
+    public readonly int $isComplex;
+
+    public function __construct(string $rule, int $lineNo, string $params = '', bool $isComplex = false)
+    {
+        parent::__construct('at-rule', $lineNo);
+        
         $this->rule = $rule;
         $this->params = $params;
         $this->isComplex = $isComplex;
