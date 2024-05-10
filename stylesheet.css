@@ -1,0 +1,170 @@
+@charset "UTF-8";@import url("imported.css");
+@font-face {
+    font-family: "MyFont";
+    src: url("myfont.woff2") format("woff2"),
+         url("myfont.woff") format("woff");
+}
+@media screen and (min-width: 768px) {
+    /* Media query */
+    .container {
+        width: 80%;
+    }
+}
+@keyframes example {
+    from {
+        opacity: 0;
+        font-size: medium;
+    }
+    to {
+        opacity: 1;
+        font-size: large;
+    }
+}
+
+/* Child combinator and CSS variable for color */
+:root {
+    --main-color: #06c;
+}
+
+/* Selectors */
+/* Element Selector
+    Multi-line */
+h1 {
+    border: red green blue blue;
+}
+
+/* Class Selector */
+.my-class {
+    font-size: 16px;
+    background-color: #cecece22;
+}
+
+/* ID Selector */
+#my-id {
+    font-weight: bold;
+}
+
+/* Attribute Selector */
+a[href="https://www.example.com"] {
+    text-decoration: none;
+    border-color: #ffcc00;
+    background-color: #fff;
+    color: #fc02;
+}
+
+/* Pseudo-Class Selector */
+a:hover {
+    color: blue;
+}
+
+/* Directives */
+/* Namespace */
+@namespace url(http://www.w3.org/1999/xhtml);
+/* Supports */
+@supports (display: grid) {
+    .grid-container {
+        display: grid;
+    }
+}
+
+/* Mixed usage */
+.container {
+    /* Property */
+    margin: 0 auto;
+    /* Pseudo-Element */
+    ::before {
+        content: "";
+        display: block;
+    }
+}
+
+/* Basic element selector, using a hexadecimal color */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f8;
+    color: #333;
+}
+
+/* Class selector, RGB color */
+.container {
+    /* Comment to mess this thing up */
+    width: 80%;
+    margin: auto;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ID selector, RGBA color */
+#header {
+    background-color: rgba(255, 165, 0, 0.9);
+    padding: 20px 0;
+    text-align: center;
+    color: #fff;
+}
+
+/* Attribute selector, HSL color */
+a[href^="http"] {
+    color: hsl(210, 100%, 50%);
+    text-decoration: none;
+}
+
+/* Pseudo-classes and HSLA color */
+a:hover {
+    color: hsla(210, 100%, 50%, 0.5);
+}
+
+article > p {
+    color: var(--main-color);
+}
+
+/* Universal selector, multiple properties */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Media query with a feature query nested inside */
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+    }
+
+    @supports (display: grid) {
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+    }
+}
+
+/* Keyframes animation using keywords for colors */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        color: black;
+    }
+    to {
+        opacity: 1;
+        color: white;
+    }
+}
+
+/* Complex selector: sibling combinator, pseudo-element */
+h1 + p::first-letter {
+    font-size: 200%;
+    color: #ff6347; /* Tomato */
+}
+
+/* CSS Grid layout with minmax function */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.grid-item {
+    background-color: #ddd;
+    padding: 20px;
+    text-align: center;
+}
