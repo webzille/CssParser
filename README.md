@@ -12,24 +12,26 @@ composer require webzille/cssparser
 ```
 
 ## Usage
-Using the parser is quite simple.
+Using the parser is quite simple. To parse a CSS file and get the generated AST data structure back (AKA nodes).
+
 ```php
-$parser = new Tokenize("path/to/css.css");
+$parser = new Parser("stylesheet.css");
 $nodes = $parser->parse()->getNodes();
-$css = $parser->render($nodes);
 ```
-By default, the class renders pretty CSS, if you prefer minified CSS (or need a toggle to make it dynamic based on user input) you may chain the `minified(true)` method before the `render()` method.
+
+Then to render the CSS you could render it with the help of the format class. If you don't use it, it would use the default format.
+
 ```php
-// Default for minified is false, setting it to true renders minified CSS
-$minified = true;
-$css = $parser->minified($minified)->render($nodes);
+$format = (new CssFormat)->setIndent("    ")->setNewLine("\n");
+$render = new Render($nodes, $format);
+$css = trim($render->css());
 ```
-Or just for a simple demonstration
+
+That example sets the same indentation and newline characters as are the defaults if you don't use the format object.
+
 ```php
-$minified = false;
-$parser = new Tokenize("path/to/css.css");
-$css = $parser->parse()->minified($minified)->render();
-echo "<textarea style='width: 100%; height: 100%;'>$css</textarea>";
+$render = new Render($nodes);
+$css = trim($render->css());
 ```
 
 ## Contributing
