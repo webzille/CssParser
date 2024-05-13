@@ -2,7 +2,6 @@
 
 namespace Webzille\CssParser;
 
-use Exception;
 use Webzille\CssParser\Enum\State;
 use Webzille\CssParser\Nodes\AtRule;
 use Webzille\CssParser\Nodes\Comment;
@@ -15,16 +14,17 @@ class Parser
 {
 
     private string $file;
-    private bool $isInString = false;
-    private int $inParentheses = 0;
-    private bool $isComplex = true;
-    private int $lineNo = 1;
-    private int $col = 0;
+    private string $buffer = '';
     private string $charset = "UTF-8";
+    private bool $isComplex = true;
+    private bool $isInSingleQuotes = false;
+    private bool $isInDoubleQuotes = false;
+    private int $col = 0;
+    private int $lineNo = 1;
+    private int $inParentheses = 0;
     private CSSNode $root;
     private CSSNode $currentNode;
     private CSSNode $currentProperty;
-    private string $buffer = '';
     private State $state = State::Root;
     private ?State $previousState = null;
 
@@ -32,7 +32,7 @@ class Parser
     public function __construct(string $file)
     {
         $this->file = $file;
-        $this->root = $this->currentNode = new CSSNode('root', $this->lineNo);
+        $this->root = $this->currentNode = new CSSNode($file, $this->lineNo);
     }
 
     public function parse(): self
@@ -95,16 +95,19 @@ class Parser
 
     private function parseLiterals(string $char): void
     {
-        if ($char === '"' || $char === "'") {
-            $this->isInString = !$this->isInString;
-        }
-
-        if ($char === '(') {
-            $this->inParentheses++;
-        }
-
-        if ($char === ')') {
-            $this->inParentheses--;
+        switch ($char) {
+            case '"':
+                $this->isInSingleQuotes = !$this->isInSingleQuotes;
+                break;
+            case "'":
+                $this->isInDoubleQuotes = !$this->isInDoubleQuotes;
+                break;
+            case '(':
+                $this->inParentheses++;
+                break;
+            case ')':
+                $this->inParentheses--;
+                break;
         }
     }
 
@@ -114,11 +117,11 @@ class Parser
             $this->parseAtRule($line);
         }
 
-        if ($char === '{' || ($char === ',' && $this->state !== State::Property && !$this->inParentheses())) {
+        if ($char === '{' || ($char === ',' && $this->state !== State::Property && !$this->inLiteral())) {
             $this->parseSelector($line);
         }
 
-        if (!$this->inParentheses() && !$this->isInString) {
+        if (!$this->inLiteral()) {
             $this->parsePropertyBlock($char);
         }
 
@@ -127,16 +130,26 @@ class Parser
         }
     }
 
+    private function inString(): bool
+    {
+        return $this->isInSingleQuotes || $this->isInDoubleQuotes;
+    }
+
     private function inParentheses(): bool
     {
         return $this->inParentheses > 0;
+    }
+
+    private function inLiteral(): bool
+    {
+        return $this->inParentheses() || $this->inString();
     }
 
     private function parseAtRule(string $line): void
     {
         $atRuleEnd = strcspn($line, '{};', $this->col);
         $fullAtRule = trim(substr($line, $this->col, $atRuleEnd));
-        $this->isComplex = $line[$atRuleEnd + $this->col] === ';' ? false : true;
+        $this->isComplex = $line[$atRuleEnd + $this->col] !== ';';
         $this->col += $atRuleEnd;
 
         $spacePos = strpos($fullAtRule, ' ');
@@ -156,7 +169,7 @@ class Parser
         }
 
         $this->buffer = '';
-    }
+    }  
 
     private function parseSelector(string $line): void
     {
@@ -256,7 +269,7 @@ class Parser
         $this->buffer = '';
     }
 
-    private function setState(State $state)
+    private function setState(State $state): void
     {
         $this->previousState = $this->state;
         $this->state = $state;
