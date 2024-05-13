@@ -6,21 +6,15 @@ class CssFormat
 {
     private string $indent = "    ";
     private string $newLine = "\n";
-    private bool $minified = false;
 
     public function indent()
     {
-        return $this->minified ? '' : $this->indent;
+        return $this->indent;
     }
 
     public function newLine()
     {
-        return $this->minified ? '' : $this->newLine;
-    }
-
-    public function minified()
-    {
-        return $this->minified;
+        return $this->newLine;
     }
 
     public function setIndent($indent = "    ")
@@ -37,10 +31,12 @@ class CssFormat
         return $this;
     }
 
-    public function minify($minify = true)
+    public function minify($minified = true)
     {
-        $this->minified = $minify;
-
+        if ($minified) {
+            $this->setIndent('')->setNewLine('');
+        }
+        
         return $this;
     }
 }
