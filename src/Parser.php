@@ -169,7 +169,7 @@ class Parser
         }
 
         $this->buffer = '';
-    }  
+    }
 
     private function parseSelector(string $line): void
     {
