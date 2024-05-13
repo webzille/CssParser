@@ -34,6 +34,22 @@ $render = new Render($nodes);
 $css = trim($render->css());
 ```
 
+If you want minified CSS, instead of setting an empty string as indent and newline, you could simply use the `minify()` method which takes an optional boolean argument as it's value to make the minification dynamic (wether it's based on specific conditions or user input).
+
+```php
+$minified = true;
+$format = (new CssFormat)->minify($minified);
+$render = new Render($nodes, $format);
+$css = trim($render->css());
+
+// The following is the same as the previous
+$format = (new CssFormat)->minify();
+$render = new Render($nodes, $format);
+$css = trim($render->css());
+```
+
+At the moment, minified CSS is simply the entire CSS in one line.
+
 ## Contributing
 Contributions to the Webzille CSS Parser are welcome! Please ensure that you submit pull requests to the development branch.
 
