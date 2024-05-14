@@ -2,14 +2,14 @@
 
 namespace Webzille\CssParser\Enum;
 
-enum State: string
+enum State
 {
-    case Root = "Root";
-    case AtRule = "AtRule";
-    case Selector = "Selector";
-    case Property = "Property";
-    case PropertyValue = "PropertyValue";
-    case Comment = "Comment";
+    case Root;
+    case AtRule;
+    case Selector;
+    case Property;
+    case PropertyValue;
+    case Comment;
 
     public function label(): string
     {
