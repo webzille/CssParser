@@ -16,7 +16,6 @@ class Parser
     private string $file;
     private string $buffer = '';
     private string $charset = "UTF-8";
-    private bool $isComplex = true;
     private bool $isInSingleQuotes = false;
     private bool $isInDoubleQuotes = false;
     private int $col = 0;
@@ -117,16 +116,63 @@ class Parser
             $this->parseAtRule($line);
         }
 
-        if ($char === '{' || ($char === ',' && $this->state !== State::Property && !$this->inLiteral())) {
-            $this->parseSelector($line);
-        }
-
         if (!$this->inLiteral()) {
+            if ($char === '{' || ($char === ',' && $this->state !== State::Property)) {
+                $this->parseSelector($line);
+            }
+
             $this->parsePropertyBlock($char);
         }
 
         if ($char === '}') {
             $this->parseBlockEnd();
+        }
+    }
+
+    private function parseComment(string $char, string $line, int $length): void
+    {
+        switch ($char) {
+            case '/':
+                if ($this->col + 1 < $length && $line[$this->col + 1] === '*') {
+                    $this->parseCommentStart($line);
+                }
+                break;
+            case '*':
+                if ($this->col + 1 < $length && $line[$this->col + 1] == '/') {
+                    $this->parseCommentEnd();
+                }
+                break;
+            default:
+                if ($this->state === State::Comment && $this->col + 1 === $length) {
+                    $this->parseCommentLine();
+                }
+                break;
+        }
+    }
+
+    private function parsePropertyBlock(string $char): void
+    {
+        switch ($char) {
+            case ':':
+                if ($this->state === State::Selector
+                    && strpos($this->buffer, ':')
+                    && strpos($this->buffer, '.') === false
+                    && strpos($this->buffer, '#') === false
+                ) {
+                    $this->parseProperty();
+                }
+                break;
+            case ';':
+            case '}':
+                if ($this->state === State::Property) {
+                    $this->parsePropertyValue($char);
+                }
+                break;
+            case ',':
+                if ($this->state === State::Property && strrpos($this->buffer, ')')) {
+                    $this->parsePropertyValue($char);
+                }
+                break;
         }
     }
 
@@ -149,21 +195,21 @@ class Parser
     {
         $atRuleEnd = strcspn($line, '{};', $this->col);
         $fullAtRule = trim(substr($line, $this->col, $atRuleEnd));
-        $this->isComplex = $line[$atRuleEnd + $this->col] !== ';';
+        $isComplex = $line[$atRuleEnd + $this->col] !== ';';
         $this->col += $atRuleEnd;
 
         $spacePos = strpos($fullAtRule, ' ');
         $atRule = ($spacePos !== false) ? substr($fullAtRule, 0, $spacePos) : $fullAtRule;
         $params = ($spacePos !== false) ? trim(substr($fullAtRule, $spacePos)) : '';
 
-        if ($atRule === '@charset') {
+        if (strtolower($atRule) === '@charset') {
             $this->setCharset($params);
         }
 
-        $node = new AtRule($atRule, $this->lineNo, $params, $this->isComplex);
+        $node = new AtRule($atRule, $this->lineNo, $params, $isComplex);
         $this->currentNode->addChild($node);
 
-        if ($this->isComplex) {
+        if ($isComplex) {
             $this->currentNode = $node;
             $this->setState(State::Selector);
         }
@@ -174,25 +220,14 @@ class Parser
     private function parseSelector(string $line): void
     {
         $this->buffer = rtrim($this->buffer, ',');
-        $selectorValue = trim(str_replace(['}', '{'], '', $this->buffer));
-        $selector = new Selector($selectorValue, $this->lineNo);
+        $selectorValue = str_replace(['}', '{'], '', $this->buffer);
+        $selector = new Selector(trim($selectorValue), $this->lineNo);
         $this->currentNode->addChild($selector);
         $this->buffer = '';
 
         if ($line[$this->col] !== ',') {
             $this->setState(State::Selector);
             $this->currentNode = $selector;
-        }
-    }
-
-    private function parsePropertyBlock(string $char): void
-    {
-        if ($char === ':' && $this->state === State::Selector && strpos(trim($this->buffer), ':') && strpos($this->buffer, '.') === false && strpos($this->buffer, '#') === false) {
-            $this->parseProperty();
-        }
-
-        if ($this->state === State::Property && ($char === ';' || $char === '}' || ($char === ',' && strrpos($this->buffer, ')')))) {
-            $this->parsePropertyValue($char);
         }
     }
 
@@ -207,29 +242,16 @@ class Parser
 
     private function parsePropertyValue(string $char): void
     {
-        $this->buffer = rtrim($this->buffer, ',;');
+        $value = rtrim($this->buffer, ',;');
+        $important = str_contains(strtolower($value), '!important');
+        $value = ($important) ? trim(str_replace('!important', '', $value)) : $value;
 
-        $value = trim(str_replace('}', '', $this->buffer));
-        $this->currentProperty->addChild(new PropertyValue($value, $this->lineNo));
+        $value = trim(str_replace('}', '', $value));
+        $this->currentProperty->addChild(new PropertyValue($value, $this->lineNo, $important));
         $this->buffer = '';
 
         if ($char !== ',' && !strrpos($this->buffer, ')')) {
             $this->setState(State::Selector);
-        }
-    }
-
-    private function parseComment(string $char, string $line, int $length): void
-    {
-        if ($char === '/' && $this->col + 1 < $length && $line[$this->col + 1] === '*') {
-            $this->parseCommentStart($line);
-        }
-
-        if ($this->state === State::Comment && $this->col + 1 === $length) {
-            $this->parseCommentLine();
-        }
-
-        if ($char === '*' && $this->col + 1 < $length && $line[$this->col + 1] == '/') {
-            $this->parseCommentEnd();
         }
     }
 
@@ -260,6 +282,7 @@ class Parser
         $comment = new Comment(trim($this->buffer) . '/', $this->lineNo);
         $this->currentNode->addChild($comment);
         $this->buffer = '';
+        $this->col++;
     }
 
     private function parseBlockEnd(): void
