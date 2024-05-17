@@ -92,6 +92,7 @@ $criteria = [
         'value' => '.container'
     ]
 ];
+
 $search = Search::search($nodes)->find($criteria);
 
 $results = $search->results();
