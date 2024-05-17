@@ -124,6 +124,8 @@ The following optimization options it offers at the moment.
 
 Every method logs every change they make which you could retrieve VIA the `getModified()` method. You could also clear the log VIA the `clearModified()` method between optimizing methods if you want to see what each method does without the logs from other methods cluttering up the log.
 
+The line numbers of every logged modification are relative to the original parsed CSS file and not the rendered CSS.
+
 For a more comprehensive optimization example, you may check out the **optimizeDemo.php** provided.
 
 ## Contributing
