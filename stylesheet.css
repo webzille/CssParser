@@ -21,16 +21,38 @@
     }
 }
 
-/* Child combinator and CSS variable for color */
-:root {
-    --main-color: #06c;
+.foo {
+    @layer base {
+        block-size: 100%;
+            @layer support {
+            & .bar {
+                min-block-size: 100%;
+            }
+        }
+    }
 }
 
-/* Selectors */
-/* Element Selector
+
+/* Child combinator and CSS variable for color */
+:root {
+    --main-color: #0066cc;
+}
+
+* :not(pre, code) {
+    margin: 0;
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+}
+
+/* Selectors 
+    Element Selector
     Multi-line */
 h1 {
-    border: red green blue blue;
+    border-color: blue;
+    border-width: 2px;
+    border-style: solid;
 }
 
 /* Class Selector */
@@ -68,13 +90,13 @@ a:hover {
 }
 
 /* Mixed usage */
-.container {
+body .container {
     /* Property */
     margin: 0 auto;
     /* Pseudo-Element */
     ::before {
         content: "";
-        display: block;
+        display: block!important;
     }
 }
 
@@ -86,7 +108,7 @@ body {
 }
 
 /* Class selector, RGB color */
-.container {
+.container .comment {
     /* Comment to mess this thing up */
     width: 80%;
     margin: auto;
@@ -97,6 +119,7 @@ body {
 /* ID selector, RGBA color */
 #header {
     background-color: rgba(255, 165, 0, 0.9);
+    background: linear-gradient(315deg, rgba(255, 153, 0, 0.4), transparent) !important;
     padding: 20px 0;
     text-align: center;
     color: #fff;
@@ -126,7 +149,7 @@ article > p {
 
 /* Media query with a feature query nested inside */
 @media (max-width: 768px) {
-    .container {
+    .container #my-id {
         width: 100%;
     }
 
@@ -164,7 +187,9 @@ h1 + p::first-letter {
 }
 
 .grid-item {
+    font-family: "MyFont";
     background-color: #ddd;
     padding: 20px;
+    padding: 15px;
     text-align: center;
 }
