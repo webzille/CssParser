@@ -105,7 +105,7 @@ For a more comprehensive example of searching, you may check out the **searchDem
 
 ## Optimization
 
-This package also provides a package you may use to optimize the parsed CSS data structure which you could later render as minified or pretty CSS. Just like the search utility class, you could initiate the class directly or by using the static factory method for the same reasons as the search utility class.
+This package also provides an optimization utility class you may use to optimize the parsed CSS data structure which you could later render as minified or pretty CSS. Just like the search utility class, you could initiate the class directly or by using the static factory method for the same reasons as the search utility class.
 
 ```php
 $optimizer = Optimize::optimize($nodes);
