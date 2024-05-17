@@ -10,13 +10,13 @@ $cssFile = "stylesheet.css";
 $parser = new Parser($cssFile);
 $nodes = $parser->parse()->getNodes();
 
-$search = Search::search($nodes);
+$search = new Search($nodes);
 
 // Test cases
 $search->resetResults()->find([
     ['type' => 'property', 'property' => 'width', 'value' => '80%']
 ]);
-echo "\n\n\nResults for property 'width' with value '80%':\n\n";
+echo "Results for property 'width' with value '80%':\n\n";
 foreach ($search->results() as $results) {
     echo "<strong>$results->property: {$results->getChildren()[0]->value};</strong> on Line: $results->lineNo" . PHP_EOL;
 }
@@ -49,6 +49,14 @@ $search->resetResults()->find([
     ['type' => 'media', 'value' => 'screen and (min-width: 768px)']
 ]);
 echo "\n\n\nResults for media query 'screen and (min-width: 768px)':\n\n";
+foreach ($search->results() as $results) {
+    echo "<strong>" . trim("$results->rule $results->params") . "</strong> on Line: $results->lineNo" . PHP_EOL;
+}
+
+$search->resetResults()->find([
+    ['type' => 'media', 'value' => '768px']
+]);
+echo "\n\n\nResults for media query '768px':\n\n";
 foreach ($search->results() as $results) {
     echo "<strong>" . trim("$results->rule $results->params") . "</strong> on Line: $results->lineNo" . PHP_EOL;
 }
