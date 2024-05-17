@@ -13,14 +13,14 @@ class Render
 {
     
     private CSSNode $root;
-    private CssFormat $format;
+    private Format $format;
     private string $indent;
     private string $newLine;
 
-    public function __construct(CSSNode $node, CssFormat $format = null)
+    public function __construct(CSSNode $node, Format $format = null)
     {
         $this->root = $node;
-        $this->format = $format ?? new CssFormat();
+        $this->format = $format ?? new Format();
         $this->indent = $this->format->indent();
         $this->newLine = $this->format->newLine();
     }

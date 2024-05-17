@@ -136,20 +136,16 @@ class Optimize
         ]
     ];
 
+    private array $prefixes = [
+        '-webkit-',
+        '-moz-',
+        '-ms-',
+        '-o-',
+    ];
+
     public function __construct(CSSNode $node)
     {
         $this->root = $node;
-    }
-
-    public static function optimize(CSSNode $node): Optimize
-    {
-        if (self::$instance === null || !(self::$instance instanceof Optimize)) {
-            self::$instance = new Optimize($node);
-        } else {
-            self::$instance->root = $node;
-        }
-
-        return self::$instance;
     }
 
     public function getNodes(): CSSNode
@@ -212,14 +208,7 @@ class Optimize
 
     private function isVendor(string $vendorable): bool
     {
-        $vendorPrefixes = [
-            '-webkit-',
-            '-moz-',
-            '-ms-',
-            '-o-',
-        ];
-
-        foreach ($vendorPrefixes as $prefix) {
+        foreach ($this->prefixes as $prefix) {
             if (str_contains($vendorable, $prefix) === true) {
                 return true;
             }
@@ -346,15 +335,15 @@ class Optimize
     function vendorPrefix(CSSNode $node = null): self
     {
         $node = $node === null ? $this->root : $node;
-        
+
         $children = $node->getChildren();
-        
+
         foreach ($children as $index => $child) {
             if (!$child instanceof Property) {
                 $this->vendorPrefix($child);
                 continue;
             }
-            
+
             $property = $child->property;
             $valueNodes = $child->getChildren();
 

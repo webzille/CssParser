@@ -19,17 +19,6 @@ class Search
         $this->root = $node;
     }
 
-    public static function search(CSSNode $node): Search
-    {
-        if (self::$instance === null || !(self::$instance instanceof Search)) {
-            self::$instance = new Search($node);
-        } else {
-            self::$instance->root = $node;
-        }
-
-        return self::$instance;
-    }
-
     public function clearResults(): self
     {
         $this->results = [];
