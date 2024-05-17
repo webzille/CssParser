@@ -122,6 +122,8 @@ The following optimization options it offers at the moment.
 - **optimizeColors:** All this method does is convert HEX colors to their shorthand variant whenever possible.
 - **vendorPrefix:** This method adds vendor prefix to properties (and values whenever needed) to maximize browser compatibility.
 
+If you want / need to, you may chain all (or as much as you need) the optimizing methods together to have them all optimize your CSS before rendering. (As I've done in **demo.php**).
+
 Every method logs every change they make which you could retrieve VIA the `getModified()` method. You could also clear the log VIA the `clearModified()` method between optimizing methods if you want to see what each method does without the logs from other methods cluttering up the log.
 
 The line numbers of every logged modification are relative to the original parsed CSS file and not the rendered CSS.
