@@ -157,6 +157,13 @@ class Optimize
         return $this->root;
     }
 
+    public function clearModified(): self
+    {
+        $this->modified = [];
+
+        return $this;
+    }
+
     public function removeWhitespace(CSSNode $node = null): self
     {
         $node = $node === null ? $this->root : $node;
@@ -192,7 +199,7 @@ class Optimize
                     }
                     $uniqueRules[$property] = $child;
                 } else {
-                    $this->logModified("Removed duplicate: `{$uniqueRules[$property]->property}: {$uniqueRules[$property]->getChildren()[0]->value};` ({$uniqueRules[$property]->lineNo})");
+                    $this->logModified("Removed duplicate: `{$uniqueRules[$property]->property}: {$uniqueRules[$property]->getChildren()[0]->value};` (Line: {$uniqueRules[$property]->lineNo})");
                     $node->removeChild($child);
                 }
             } else {
@@ -336,64 +343,64 @@ class Optimize
         return $this;
     }
 
-function vendorPrefix(CSSNode $node = null): self
-{
-    $node = $node === null ? $this->root : $node;
-    
-    $children = $node->getChildren();
-    
-    foreach ($children as $index => $child) {
-        if (!$child instanceof Property) {
-            $this->vendorPrefix($child);
-            continue;
-        }
+    function vendorPrefix(CSSNode $node = null): self
+    {
+        $node = $node === null ? $this->root : $node;
         
-        $property = $child->property;
-        $valueNodes = $child->getChildren();
-
-        if (isset($this->vendorPrefixes['properties'][$property])) {
-            foreach ($this->vendorPrefixes['properties'][$property] as $prefix) {
-                $prefixedProperty = new Property($prefix . $property, $child->lineNo);
-                $prefixedProperty->setChildren($valueNodes);
-
-                $this->logModified("Added Prefixed Property: $prefix$property; (Line: {$child->lineNo})");
-
-                array_splice($children, $index, 0, [$prefixedProperty]);
-                $index++;
-            }
-        }
-
-        foreach ($valueNodes as $valueNode) {
-            if (!$valueNode instanceof PropertyValue || !isset($this->vendorPrefixes['values'][$property])) {
+        $children = $node->getChildren();
+        
+        foreach ($children as $index => $child) {
+            if (!$child instanceof Property) {
+                $this->vendorPrefix($child);
                 continue;
             }
+            
+            $property = $child->property;
+            $valueNodes = $child->getChildren();
 
-            $value = $valueNode->value;
+            if (isset($this->vendorPrefixes['properties'][$property])) {
+                foreach ($this->vendorPrefixes['properties'][$property] as $prefix) {
+                    $prefixedProperty = new Property($prefix . $property, $child->lineNo);
+                    $prefixedProperty->setChildren($valueNodes);
 
-            foreach ($this->vendorPrefixes['values'][$property] as $originalValue => $prefixes) {
-                if (strpos($value, $originalValue) === false) {
-                    continue;
-                }
-
-                foreach ($prefixes as $prefix) {
-                    $prefixedValue = str_replace($originalValue, $prefix, $value);
-                    $prefixedProperty = new Property($property, $child->lineNo);
-                    $prefixedValueNode = new PropertyValue($prefixedValue, $child->lineNo, $valueNode->important);
-                    $prefixedProperty->addChild($prefixedValueNode);
-
-                    $this->logModified("Added Prefixed Value: $property: $prefixedValue; (Line: {$child->lineNo})");
+                    $this->logModified("Added Prefixed Property: $prefix$property; (Line: {$child->lineNo})");
 
                     array_splice($children, $index, 0, [$prefixedProperty]);
                     $index++;
                 }
             }
+
+            foreach ($valueNodes as $valueNode) {
+                if (!$valueNode instanceof PropertyValue || !isset($this->vendorPrefixes['values'][$property])) {
+                    continue;
+                }
+
+                $value = $valueNode->value;
+
+                foreach ($this->vendorPrefixes['values'][$property] as $originalValue => $prefixes) {
+                    if (strpos($value, $originalValue) === false) {
+                        continue;
+                    }
+
+                    foreach ($prefixes as $prefix) {
+                        $prefixedValue = str_replace($originalValue, $prefix, $value);
+                        $prefixedProperty = new Property($property, $child->lineNo);
+                        $prefixedValueNode = new PropertyValue($prefixedValue, $child->lineNo, $valueNode->important);
+                        $prefixedProperty->addChild($prefixedValueNode);
+
+                        $this->logModified("Added Prefixed Value: $prefixedValue; (Line: {$child->lineNo})");
+
+                        array_splice($children, $index, 0, [$prefixedProperty]);
+                        $index++;
+                    }
+                }
+            }
+
+            $this->vendorPrefix($child);
         }
 
-        $this->vendorPrefix($child);
+        $node->setChildren($children);
+
+        return $this;
     }
-
-    $node->setChildren($children);
-
-    return $this;
-}
 }
