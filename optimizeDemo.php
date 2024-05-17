@@ -1,15 +1,14 @@
 <pre><?php
 
-use Webzille\CssParser\Parser;
-use Webzille\CssParser\Util\Optimize;
+use Webzille\CssParser\CSS;
 
 require "vendor/autoload.php";
 
 $cssFile = "stylesheet.css";
-$parser = new Parser($cssFile);
+$parser = CSS::parser($cssFile);
 $nodes = $parser->parse()->getNodes();
 
-$optimizer = Optimize::optimize($nodes);
+$optimizer = CSS::optimize($nodes);
 
 // 1. Remove Whitespace and comments
 $optimizer->removeWhitespace();
