@@ -41,4 +41,31 @@ class CSSNode
     {
         return $this->countChildren() > 0;
     }
+
+    public function setChildren(array $children): void
+    {
+        $this->children = $children;
+    }
+
+    public function setParent(?CSSNode $parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    public function removeChild(CSSNode $child): void
+    {
+        foreach ($this->children as $key => $existingChild) {
+            if ($existingChild === $child) {
+                unset($this->children[$key]);
+
+                $this->children = array_values($this->children);
+                break;
+            }
+        }
+    }
+
+    public function clearChildren()
+    {
+        $this->children = [];
+    }
 }

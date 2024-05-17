@@ -12,6 +12,15 @@ class Search
 
     private $results = [];
 
+    private static ?Search $instance = null;
+
+    public static function search(CSSNode $node): Search
+    {
+        self::$instance = self::$instance instanceof Search ? self::$instance : new Search();
+
+        return self::$instance;
+    }
+
     public function resetResults(): self
     {
         $this->results = [];
@@ -24,7 +33,7 @@ class Search
         return $this->results;
     }
 
-    public function search(CSSNode $node, array $criteria): self
+    public function find(CSSNode $node, array $criteria): self
     {
         foreach ($criteria as $criterion) {
             switch ($criterion['type']) {
