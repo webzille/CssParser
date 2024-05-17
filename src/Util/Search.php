@@ -30,9 +30,10 @@ class Search
         return self::$instance;
     }
 
-    public function resetResults(): self
+    public function clearResults(): self
     {
         $this->results = [];
+
         return $this;
     }
 
@@ -66,7 +67,7 @@ class Search
                     $this->searchByAttribute($criterion['value'], $node);
                     break;
                 case 'media':
-                    $this->searchByMediaQuery($criterion['value'], $node);
+                    $this->searchByMedia($criterion['value'], $node);
                     break;
                 case 'pseudo':
                     $this->searchByPseudo($criterion['value'], $node);
@@ -115,7 +116,7 @@ class Search
                     $match = $this->nodeMatchesAttribute($criterion['value'], $node);
                     break;
                 case 'media':
-                    $match = $this->nodeMatchesMediaQuery($criterion['value'], $node);
+                    $match = $this->nodeMatchesMedia($criterion['value'], $node);
                     break;
                 case 'pseudo':
                     $match = $this->nodeMatchesPseudo($criterion['value'], $node);
@@ -262,17 +263,17 @@ class Search
         return $this;
     }
 
-    public function searchByMediaQuery(string $mediaQuery, CSSNode $node = null): self
+    public function searchByMedia(string $mediaQuery, CSSNode $node = null): self
     {
         $node = $node === null ? $this->root : $node;
 
-        if ($this->nodeMatchesMediaQuery($mediaQuery, $node)) {
+        if ($this->nodeMatchesMedia($mediaQuery, $node)) {
             $this->results[] = $node;
         }
 
         if ($node->hasChildren()) {
             foreach ($node->getChildren() as $child) {
-                $this->searchByMediaQuery($mediaQuery, $child);
+                $this->searchByMedia($mediaQuery, $child);
             }
         }
 
@@ -323,7 +324,7 @@ class Search
         return $node instanceof Selector && preg_match('/\[' . preg_quote($attribute, '/') . '[^]]*\]/', $node->selector);
     }
 
-    private function nodeMatchesMediaQuery(string $mediaQuery, CSSNode $node): bool
+    private function nodeMatchesMedia(string $mediaQuery, CSSNode $node): bool
     {
         return $node instanceof AtRule && str_starts_with($node->rule, '@media') && str_contains(trim("{$node->rule} {$node->params}"), $mediaQuery);
     }
