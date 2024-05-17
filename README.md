@@ -60,8 +60,10 @@ $search = Search::search($nodes);
 // Or the following if you prefer
 $search = new Search($nodes);
 ```
+If you use the static factory method, you could easily chain other methods to it without having to dirty up your code with either additional lines or using parentheses.
 
-The following search methods are included at the moment
+The following search methods are included at the moment:
+
 - **searchByType:** Searches the AST data structure for every node that are the instance of a specific type. Besides the optional $node argument (the AST Data Structure), the $type argument expected should take form of `AtRule::class`. If no $node is provided, it will use the $node
 ```php
 $search->searchByType(Comment::class);
@@ -73,10 +75,52 @@ $search->searchByType(Comment::class);
 - **searchByAttribute:** Searches for any occurances of the requested attribute within the available selectors. (For example `href` in `a[href=^]`).
 - **searchByPseudo:** Searches for any occrances of the requested pseudo classes. You shouldn't enter any symbols into the argument with the pseudo you want to find. (Like `:after` for instance).
 - **searchByMedia:** Searches for any occurances of the requested media query within the at-rules. The query could be partial or in full entirety.
+- **find:** This is a method that would append multiple searches to one result set. It expects an array of search criteria within an array.
+```php
+$criteria = [
+    [
+        'type'  => 'type',
+        'value' => \Webzille\CssParser\Nodes\AtRule::class
+    ],
+    [
+        'type'      => 'property',
+        'property'  => 'font-family',
+        'value'     => 'MyFont'
+    ],
+    [
+        'type'  => 'selector',
+        'value' => '.container'
+    ]
+];
+```
+- **searchResults:** This method uses the results of your previous search query as the search subject (the haystack) for your search criteria in the same expected format as the previous **find** method.
+
+You get your results through the method `results()` and if you don't want to mingle results between various search queries, you would need to clear the results between searches VIA the `clearResults()` method
 
 For a more comprehensive example of searching, you may check out the **searchDemo.php** provided.
 
-If you use the static factory method, you could easily chain other methods to it without having to dirty up your code with either additional lines or using parentheses.
+## Optimization
+
+This package also provides a package you may use to optimize the parsed CSS data structure which you could later render as minified or pretty CSS. Just like the search utility class, you could initiate the class directly or by using the static factory method for the same reasons as the search utility class.
+
+```php
+$optimizer = Optimize::optimize($nodes);
+
+// Or the following if you prefer or not going to chain any methods to it.
+$optimizer = new Optimize($nodes);
+```
+
+The following optimization options it offers at the moment.
+
+- **removeWhitespace:** This method does two things, it removes any repeating whitespace (if you have more than one space within a `content` property for instance) AND it removes all the comments.
+- **removeDuplicates:** This method removes any duplicate properties as long as their values are not vendor prefixed (it completely ignores any property that has vendor prefixed values at the moment so you could have multiple properties with the same vendor prefixed value).
+- **toShorthand:** This method converts any properties to shorthand variant whenever possible (based on provided properties and their values, doesn't fill in any arbitrary data that would make it possible and not effect the end result).
+- **optimizeColors:** All this method does is convert HEX colors to their shorthand variant whenever possible.
+- **vendorPrefix:** This method adds vendor prefix to properties (and values whenever needed) to maximize browser compatibility.
+
+Every method logs every change they make which you could retrieve VIA the `getModified()` method. You could also clear the log VIA the `clearModified()` method between optimizing methods if you want to see what each method does without the logs from other methods cluttering up the log.
+
+For a more comprehensive optimization example, you may check out the **optimizeDemo.php** provided.
 
 ## Contributing
 Contributions to the Webzille CSS Parser are welcome! Please ensure that you submit pull requests to the development branch.
