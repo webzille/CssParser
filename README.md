@@ -50,12 +50,34 @@ $css = trim($render->css());
 
 At the moment, minified CSS is simply the entire CSS in one line.
 
+## Factory
+
+The factory class is provided to give easy access to all classes available in the package to allow easy one-liners without instantiating objects to variables unnecessarily.
+
+```php
+$parser = new Parser("stylesheet.css");
+$nodes = $parser->parse()->getNodes();
+
+// VS
+$nodes = CSS::parser("stylesheet.css")->parse()->getNodes();
+
+$format = (new Format)->minify();
+
+// VS
+$format = CSS::format()->minify();
+
+$optimize = CSS::optimize($nodes)->removeDuplicates(); // And other chained methods if you need them
+$search = CSS::search($nodes)->searchByType(Selector::class);
+
+$css = CSS::render($optimize->getNodes(), $format)->css();
+```
+
 ## Searching
 
 The search utility class is provided to help searching through the CSS AST Data Structure in various ways. You could search for a specific selector, property, property / value pair or other various methods. To use the search utility you could either instantiate the class yourself, or use the static search factory method to get the instance and do your search in one line.
 
 ```php
-$search = Search::search($nodes);
+$search = CSS::search($nodes);
 
 // Or the following if you prefer
 $search = new Search($nodes);
@@ -93,7 +115,7 @@ $criteria = [
     ]
 ];
 
-$search = Search::search($nodes)->find($criteria);
+$search = CSS::search($nodes)->find($criteria);
 
 $results = $search->results();
 ```
@@ -108,7 +130,7 @@ For a more comprehensive example of searching, you may check out the **searchDem
 This package also provides an optimization utility class you may use to optimize the parsed CSS data structure which you could later render as minified or pretty CSS. Just like the search utility class, you could initiate the class directly or by using the static factory method for the same reasons as the search utility class.
 
 ```php
-$optimizer = Optimize::optimize($nodes);
+$optimizer = CSS::optimize($nodes);
 
 // Or the following if you prefer or not going to chain any methods to it.
 $optimizer = new Optimize($nodes);
