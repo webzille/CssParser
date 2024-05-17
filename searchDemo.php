@@ -1,16 +1,14 @@
 <pre><?php
 
+use Webzille\CssParser\CSS;
 use Webzille\CssParser\Nodes\AtRule;
-use Webzille\CssParser\Parser;
-use Webzille\CssParser\Util\Search;
 
 require "vendor/autoload.php";
 
 $cssFile = "stylesheet.css";
-$parser = new Parser($cssFile);
-$nodes = $parser->parse()->getNodes();
+$nodes = CSS::parser($cssFile)->parse()->getNodes();
 
-$search = new Search($nodes);
+$search = CSS::search($nodes);
 
 // Test cases
 $search->clearResults()->find([
