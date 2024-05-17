@@ -92,6 +92,9 @@ $criteria = [
         'value' => '.container'
     ]
 ];
+$search = Search::search($nodes)->find($criteria);
+
+$results = $search->results();
 ```
 - **searchResults:** This method uses the results of your previous search query as the search subject (the haystack) for your search criteria in the same expected format as the previous **find** method.
 
