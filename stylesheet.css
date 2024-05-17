@@ -103,8 +103,8 @@ body .container {
 /* Basic element selector, using a hexadecimal color */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f8;
-    color: #333;
+    background-color: #f4f4f4;
+    color: #333333;
 }
 
 /* Class selector, RGB color */
