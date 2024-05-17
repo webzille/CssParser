@@ -5,8 +5,7 @@ use Webzille\CssParser\CSS;
 require "vendor/autoload.php";
 
 $cssFile = "stylesheet.css";
-$parser = CSS::parser($cssFile);
-$nodes = $parser->parse()->getNodes();
+$nodes = CSS::parser($cssFile)->parse()->getNodes();
 
 $optimizer = CSS::optimize($nodes);
 
