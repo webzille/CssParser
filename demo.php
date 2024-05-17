@@ -1,27 +1,21 @@
 <pre><?php
 
-use Webzille\CssParser\CssFormat;
-use Webzille\CssParser\Parser;
-use Webzille\CssParser\Render;
-use Webzille\CssParser\Util\Optimize;
+use Webzille\CssParser\CSS;
 
 require "vendor/autoload.php";
 
 $minified = false;
-$parser = new Parser("stylesheet.css");
-$nodes = $parser->parse()->getNodes();
-$format = (new CssFormat)->setIndent("    ")->setNewLine("\n");
+$nodes = CSS::parser("stylesheet.css")->parse()->getNodes();
+$format = CSS::format()->minify($minified);
 
-$optimized = Optimize::optimize($nodes)
+$optimized = CSS::Optimize($nodes)
                         //->removeWhitespace()
                         ->removeDuplicates()
                         ->toShorthand()
                         ->optimizeColors()
                         ->vendorPrefix();
 
-$render = new Render($optimized->getNodes(), $format);
-
-$css = trim($render->css());
+$css = trim(CSS::render($optimized->getNodes(), $format)->css());
 //print_r($nodes);
 print_r($optimized->getModified());
 echo "<textarea style='width: 100%; height: 100%;'>$css</textarea>";
