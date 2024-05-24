@@ -33,7 +33,7 @@ class Search
 
     public function find(array $criteria, CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         foreach ($criteria as $criterion) {
             switch ($criterion['type']) {
@@ -132,7 +132,7 @@ class Search
 
     public function searchByType(string $type, CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
         $newResults = [];
 
         if ($this->nodeMatchesType($type, $node)) {
@@ -152,7 +152,7 @@ class Search
 
     public function searchBySelector(string $selector, CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         if ($this->nodeMatchesSelector($selector, $node)) {
             $this->results[] = $node;
@@ -169,7 +169,7 @@ class Search
 
     public function searchByProperty(string $property, string $value = null, CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         if ($this->nodeMatchesProperty($property, $value, $node)) {
             $this->results[] = $node;
@@ -186,7 +186,7 @@ class Search
 
     public function searchByClass(string $class, CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         if ($this->nodeMatchesClass($class, $node)) {
             $this->results[] = $node;
@@ -203,7 +203,7 @@ class Search
 
     public function searchById(string $id, CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         if ($this->nodeMatchesId($id, $node)) {
             $this->results[] = $node;
@@ -220,7 +220,7 @@ class Search
 
     public function searchByAttribute(string $attribute, CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         if ($this->nodeMatchesAttribute($attribute, $node)) {
             $this->results[] = $node;
@@ -237,7 +237,7 @@ class Search
 
     public function searchByPseudo(string $pseudo, CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         if ($this->nodeMatchesPseudo($pseudo, $node)) {
             $this->results[] = $node;
@@ -254,7 +254,7 @@ class Search
 
     public function searchByMedia(string $mediaQuery, CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         if ($this->nodeMatchesMedia($mediaQuery, $node)) {
             $this->results[] = $node;
