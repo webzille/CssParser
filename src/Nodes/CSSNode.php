@@ -22,7 +22,7 @@ class CSSNode
         $this->children[] = $child;
     }
 
-    public function getParent(): CSSNode
+    public function getParent(): CSSNode|null
     {
         return $this->parent;
     }
@@ -67,5 +67,16 @@ class CSSNode
     public function clearChildren()
     {
         $this->children = [];
+    }
+
+    public function mainParent(CSSNode $node = null): CSSNode
+    {
+        $node ??= $this;
+
+        while ($node->getParent() !== null) {
+            $node = $node->getParent();
+        }
+
+        return $node;
     }
 }
