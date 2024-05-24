@@ -27,7 +27,7 @@ class Render
 
     public function css(CSSNode $node = null, int $indentation = 0, string $css = ''): string
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
         $indent = str_repeat($this->indent, $indentation);
         foreach ($node->getChildren() as $child) {
             if ($child instanceOf Selector) {
