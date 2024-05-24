@@ -12,8 +12,6 @@ class Optimize
 
     private CSSNode $root;
 
-    private static ?Optimize $instance = null;
-
     private array $modified = [];
 
     private array $shorthandProperties = [
@@ -162,7 +160,7 @@ class Optimize
 
     public function removeWhitespace(CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
         foreach ($node->getChildren() as $child) {
             if ($child instanceof PropertyValue) {
                 $oldValue = $child->value;
@@ -183,7 +181,7 @@ class Optimize
 
     public function removeDuplicates(CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
         $uniqueRules = [];
 
         foreach ($node->getChildren() as $child) {
@@ -237,7 +235,7 @@ class Optimize
 
     public function toShorthand(CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
         $allLonghands = array_merge(...array_values($this->shorthandProperties));
 
         $properties = array_reduce($node->getChildren(), function ($carry, $property) use ($allLonghands) {
@@ -315,7 +313,7 @@ class Optimize
 
     public function optimizeColors(CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         foreach ($node->getChildren() as $child) {
             if ($child instanceof PropertyValue) {
@@ -334,7 +332,7 @@ class Optimize
 
     function vendorPrefix(CSSNode $node = null): self
     {
-        $node = $node === null ? $this->root : $node;
+        $node ??= $this->root;
 
         $children = $node->getChildren();
 
